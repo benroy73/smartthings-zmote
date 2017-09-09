@@ -32,9 +32,9 @@ metadata {
             required: true,
             displayDuringSetup: true
         )
-        input("zmote_mac", "string",
-            title: "zmote MAC address",
-            description: "MAC address of your zmote (in this format 5c-cf-7f-aa-bb-cc)",
+        input("zmote_uuid", "string",
+            title: "zmote UUID",
+            description: "UUID of your zmote",
             required: true,
             displayDuringSetup: true
         )
@@ -68,34 +68,35 @@ metadata {
 
 def amp_power() {
     log.debug "Sending power command to zmote"
-    send('{"period":862316,"n":68,"seq":[343,171,21,22,21,65,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,65,21,65,21,65,21,65,21,65,21,65,21,22,21,22,21,22,21,22,21,22,21,22,21,22,21,22,21,65,21,65,21,65,21,1672],"repeat":[1,0,68]}')
+    send('sendir,1:1,1164,38000,2,1,343,171,21,22,21,65BCCCCBCBCBBBBCCCCCCBBBBBBBBCCC21,1672')
 }
 
 def amp_sleep() {
     log.debug "Sending sleep command to zmote"
-    send('{"period":862316,"n":68,"seq":[343,171,21,22,21,65,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,65,21,22,21,65,21,22,21,65,21,1672],"repeat":[1,0,68]}')
+    send('sendir,1:1,7930,38000,2,1,343,171,21,22,21,65BCCCCBCBCBBBBCCCCBCBCBBBBCBCBC21,1672')
 }
 
 def amp_aux() {
     log.debug "Sending aux input command to zmote"
-    send('{"period":862316,"n":68,"seq":[343,171,21,22,21,65,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,22,21,22,21,65,21,22,21,65,21,65,21,65,21,1672],"repeat":[1,0,68]}')
+    send('sendir,1:1,6486,38000,2,1,343,171,21,22,21,65BCCCCBCBCBBBBCCCCBCBBBBBBCBCCC21,1672')
 }
 
 def amp_vol_down() {
     log.debug "Sending vol down command to zmote"
-    send('{"period":862316,"n":68,"seq":[343,171,21,22,21,65,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,65,21,65,21,65,21,22,21,65,21,65,21,22,21,22,21,22,21,22,21,22,21,65,21,22,21,22,21,65,21,65,21,65,21,1672],"repeat":[1,0,68]}')
+    send('sendir,1:1,7593,38000,2,1,343,171,21,22,21,65BCCCCBCBCBBBBCCCBCCBBBBBCBBCCC21,1672')
 }
 
 def amp_vol_up() {
     log.debug "Sending vol up command to zmote"
-    send('{"period":862316,"n":68,"seq":[343,171,21,22,21,65,21,22,21,65,21,65,21,65,21,65,21,22,21,65,21,22,21,65,21,22,21,22,21,22,21,22,21,65,21,22,21,65,21,22,21,65,21,65,21,22,21,22,21,22,21,65,21,22,21,65,21,22,21,22,21,65,21,65,21,65,21,1672],"repeat":[1,0,68]}')
+    send('sendir,1:1,9457,38000,2,1,343,171,21,22,21,65BCCCCBCBCBBBBCBCBCCBBBCBCBBCCC21,1672')
 }
 
 
 // Send command to the zmote
 def send(zmote_command) {
-    log.debug "PUT http://$zmote_ip:80/$zmote_mac/api/ir/write"
+    log.debug "PUT http://$zmote_ip:80/v2/$zmote_uuid"
     log.debug "${zmote_command}"
+
 
     def headers = [:]
     headers.put("HOST", "$zmote_ip:80")
@@ -104,7 +105,7 @@ def send(zmote_command) {
         [
             method: "PUT",
             headers: headers,
-            path: "/$zmote_mac/api/ir/write",
+            path: "/v2/$zmote_uuid",
             body: "${zmote_command}"
         ],
         null,
